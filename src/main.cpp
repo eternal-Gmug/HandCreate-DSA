@@ -12,7 +12,12 @@ int main(){
     // sortProfiler.selectionSort();
     // sortProfiler.bubbleSort();
     // sortProfiler.insertionSort();
-    sortProfiler.insertionSort_optimization();
+    // sortProfiler.insertionSort_optimization();
+    // sortProfiler.shellSort();
+    // sortProfiler.mergeSort();
+    // sortProfiler.quickSort();
+    // sortProfiler.quickSort3Way();
+    sortProfiler.dualPivotQuickSort();
     // sortTest.traverse();
     
     /*防止窗口一闪而过*/

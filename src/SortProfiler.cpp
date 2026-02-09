@@ -150,6 +150,24 @@ void SortProfiler::quickSort(vector<int>& target) {
     profile("快速排序 (Quick Sort)", [&]() { sorter.quickSort(target); }, target);
 }
 
+void SortProfiler::quickSort3Way() {
+    vector<int>& pending = sorter.getPending();
+    profile("三向切分快速排序 (3-Way Quick Sort)", [&]() { sorter.quickSort3Way(); }, pending);
+}
+
+void SortProfiler::quickSort3Way(vector<int>& target) {
+    profile("三向切分快速排序 (3-Way Quick Sort)", [&]() { sorter.quickSort3Way(target); }, target);
+}
+
+void SortProfiler::dualPivotQuickSort() {
+    vector<int>& pending = sorter.getPending();
+    profile("双轴快速排序 (Dual Pivot Quick Sort)", [&]() { sorter.dualPivotQuickSort(); }, pending);
+}
+
+void SortProfiler::dualPivotQuickSort(vector<int>& target) {
+    profile("双轴快速排序 (Dual Pivot Quick Sort)", [&]() { sorter.dualPivotQuickSort(target); }, target);
+}
+
 void SortProfiler::heapSort() {
     vector<int>& pending = sorter.getPending();
     profile("堆排序 (Heap Sort)", [&]() { sorter.heapSort(); }, pending);

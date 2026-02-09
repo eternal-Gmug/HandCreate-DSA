@@ -51,6 +51,10 @@ class SortProfiler {
         void mergeSort(vector<int>& target);
         void quickSort();
         void quickSort(vector<int>& target);
+        void quickSort3Way();
+        void quickSort3Way(vector<int>& target);
+        void dualPivotQuickSort();
+        void dualPivotQuickSort(vector<int>& target);
         void heapSort();
         void heapSort(vector<int>& target);
         void countingSort();
