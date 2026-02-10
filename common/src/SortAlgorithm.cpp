@@ -444,7 +444,7 @@ void dualPivot(vector<int>& pending, int left, int right){
             swap(pending[lt++], pending[k++]);
         }else if(pending[k] >= p2){
             // 寻找右区第一个小于p2的元素
-            while(pending[gt] >= p2 && gt < k){
+            while(pending[gt] >= p2 && gt > k){
                 gt--;
             }
             swap(pending[gt--], pending[k]);
