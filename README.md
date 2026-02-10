@@ -1,3 +1,0 @@
-# HandCreate-DSA
-
-- @id:editor.inlineSuggest.enabled 在设置中使用该指令可以开关代码区的内联建议
