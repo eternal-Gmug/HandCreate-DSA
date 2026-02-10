@@ -1,10 +1,13 @@
-add_subdirectory(bubble_sort)
-add_subdirectory(selection_sort)
-add_subdirectory(insertion_sort)
-add_subdirectory(shell_sort)
-add_subdirectory(merge_sort)
-add_subdirectory(quick_sort)
-add_subdirectory(heap_sort)
-add_subdirectory(counting_sort)
-add_subdirectory(bucket_sort)
-add_subdirectory(radix_sort)
+project(sort_service)
+
+add_library(sort_lib STATIC
+    src/sort.cpp
+)
+
+target_include_directories(sort_lib PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+target_link_libraries(sort_lib PRIVATE HandCreate-DSA::Common)
+add_library(HandCreate-DSA::Sort ALIAS sort_lib)

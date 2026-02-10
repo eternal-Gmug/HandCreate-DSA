@@ -6,7 +6,7 @@
 
 - **学习与实践**: 深入理解经典排序算法的内部机制和时间/空间复杂度。
 - **性能分析**: 提供统一的 `SortProfiler` 和 `Logger` 工具，方便对不同算法在相同数据集下的性能进行对比。
-- **代码规范**: 遵循 Google C++ Style Guide，注重代码的可读性与模块化设计。
+- **代码规范**: 遵循 Dxygen，注重代码的可读性与模块化设计。
 
 ## 项目架构
 
@@ -16,17 +16,15 @@
 HandCreate-DSA/
 ├── common/              # 公共组件库
 │   ├── include/
-│   │   └── sort_profiler/  # 性能分析与日志工具
-│   └── src/                # Logger 实现
+│   │   └── sort_profiler/  # 性能分析与日志工具 (SortTester, Logger)
+│   └── src/                # 公共组件实现
 ├── services/            # 核心算法实现模块
-│   ├── bubble_sort/     # 冒泡排序
-│   ├── quick_sort/      # 快速排序 (含三路快排、双轴快排)
-│   ├── merge_sort/      # 归并排序
-│   ├── ...              # 其他排序算法 (Bucket, Counting, Heap, Insertion, Radix, Selection, Shell)
-│   └── CMakeLists.txt   # 服务层构建配置
-├── tests/               # 测试模块 (基于 GTest 或自定义测试框架)
-│   ├── unit_tests/      # 单元测试
-│   └── integration_tests/ # 集成测试
+│   └── sort/            # 排序服务模块
+│       ├── include/     # 统一头文件 (sort.h)
+│       └── src/         # 排序算法实现 (sort.cpp)
+├── tests/               # 测试模块
+│   ├── unit_tests/      # 单元测试 (针对各个算法的独立测试)
+│   └── integration_tests/ # 集成测试 (Unified TestSorts)
 └── CMakeLists.txt       # 根项目构建配置
 ```
 
@@ -35,7 +33,8 @@ HandCreate-DSA/
 - **Logger (common)**: 
   - 线程安全的单例日志记录器。
   - 支持将排序前后的数组状态自动记录到按日期分层的文件中。
-  - output: `logs/YYYY_MM/DD/algorithm_timestamp.txt`
+  - Path structure: `build/logs/YYYY/MM/DD/algorithmname_yyyy_mm_dd_hh_mm_ss.txt`
+  - Output format: 包含时间、数据量、排序前/后状态、精确耗时(ms)。
 
 ## 使用说明
 
@@ -43,6 +42,7 @@ HandCreate-DSA/
 
 - CMake 3.10+
 - 支持 C++17 的编译器 (MSVC, GCC, Clang)
+- Windows (处理中文日志输出时建议配套)
 
 ### 构建项目
 
@@ -60,57 +60,51 @@ cmake --build .
 
 ### 运行测试
 
-编译完成后，可以在 `build/tests` 目录下找到测试可执行文件。
+编译完成后，可以在 `build/bin` 目录下找到测试可执行文件。
 
 ```bash
-# 运行单元测试
-./tests/unit_tests/unit_tests
+# 运行所有测试 (通过 CTest)
+ctest -V
+
+# 运行集成测试 (包含所有算法)
+./bin/integration_tests
+
+# 运行特定算法的单元测试
+./bin/test_BubbleSort
+./bin/test_QuickSort
+# ...
 ```
 
-## 新增子项目流程
+## 新增排序算法流程
 
-如果想要添加一个新的算法（例如 `timsort`），请遵循以下步骤：
+本项目已将所有排序算法合并至统一的服务模块中。如果想要添加一个新的算法（例如 `timsort`），请遵循以下步骤：
 
-1.  **创建目录结构**:
-    在 `services/` 下创建 `timsort` 目录：
-    ```
-    services/timsort/
-    ├── CMakeLists.txt
-    ├── include/
-    │   └── TimSort.h
-    └── src/
-        └── TimSort.cpp
+1.  **添加接口**:
+    在 `services/sort/include/sort.h` 的 `HandCreateDSA::Sort` 类中添加静态方法声明：
+    ```cpp
+    /// @brief TimSort 算法实现.
+    /// ...
+    static void timSort(std::vector<int>& target);
     ```
 
-2.  **配置 CMakeLists.txt**:
-    在 `services/timsort/CMakeLists.txt` 中添加：
-    ```cmake
-    project(timsort)
-
-    add_library(timsort SHARED
-        src/TimSort.cpp
-    )
-
-    target_include_directories(timsort PUBLIC 
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    )
-    
-    # 链接公共库
-    target_link_libraries(timsort PUBLIC common)
+2.  **实现逻辑**:
+    在 `services/sort/src/sort.cpp` 中实现具体逻辑。建议在开始和结束调用 Logger：
+    ```cpp
+    void Sort::timSort(std::vector<int>& target) {
+        Logger::getInstance().log("TimSort started.");
+        // 实现代码...
+        Logger::getInstance().log("TimSort finished.");
+    }
     ```
 
-3.  **注册服务**:
-    修改 `services/CMakeLists.txt`，加入新目录：
-    ```cmake
-    add_subdirectory(timsort)
-    ```
-
-4.  **编写代码**:
-    - 在 `.h` 文件中声明接口（参考 `BubbleSort.h` 的注释风格）。
-    - 在 `.cpp` 文件中实现逻辑，并建议使用 `Logger` 记录开始和结束。
-
-5.  **添加测试**:
-    在 `tests/unit_tests/` 下创建 `TimSortTest.cpp` 并注册到 `tests/unit_tests/CMakeLists.txt`。
+3.  **添加测试**:
+    - 在 `tests/unit_tests/sort/` 下创建 `TimSortTest.cpp`。
+    - 使用 `run_test` 宏或 `SortTester::runCustomTest` 进行测试。
+    - 在 `tests/unit_tests/CMakeLists.txt` 中注册新的测试：
+      ```cmake
+      add_sort_test(TimSort HandCreate-DSA::Sort)
+      ```
+    - 在 `tests/integration_tests/TestSorts.cpp` 中加入集成测试调用。
 
 ## 代码注释规范
 
@@ -134,7 +128,3 @@ cmake --build .
     `@warning`: 警告，通常用于标记非线程安全或高风险操作。
 
 - **源文件 (.cpp)**: 在关键算法步骤前添加实现细节注释 (`// [步骤名称]`)，解释"为什么这么做"而不仅仅是"做了什么"。
-<<<<<<< HEAD
-=======
-
->>>>>>> 988f5ee7eb207ee814c547d2d59b5d4430b42624

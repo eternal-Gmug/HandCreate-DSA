@@ -48,7 +48,7 @@ namespace HandCreateDSA {
         /// @brief 供单元测试使用的简单验证函数.
         /// @param name 算法名称.
         /// @param sortFunc 排序函数.
-        static void runUnitTests(const std::string& name, std::function<void(std::vector<int>&)> sortFunc);
+        static void runUnitTests(const std::string& name, std::function<void(std::vector<int>&)> sortFunc, size_t numElements = 20);
 
         /// @brief 运行自定义数组的测试.
         ///

@@ -77,15 +77,24 @@ namespace HandCreateDSA {
         }
     }
 
-    void SortTester::runUnitTests(const std::string& name, std::function<void(std::vector<int>&)> sortFunc) {
+    void SortTester::runUnitTests(const std::string& name, std::function<void(std::vector<int>&)> sortFunc, size_t numElements) {
+        Logger::getInstance().log("Unit Tests started for: " + name);
+        
         // 1. Basic Random
         {
-            auto arr = generateArray(20, ArrayType::RANDOM, -50, 50);
+            auto arr = generateArray(numElements, ArrayType::RANDOM, -50, 50);
+            auto before = arr;
+
+            auto start = std::chrono::high_resolution_clock::now();
             sortFunc(arr);
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> elapsed = end - start;
+
             if (!isSorted(arr)) {
                 std::cerr << name << ": Failed random small test." << std::endl;
                 exit(1);
             }
+            Logger::getInstance().logSortResult(name + "_UnitTest_Random", before, arr, elapsed.count());
         }
         
         // 2. Empty
@@ -129,11 +138,17 @@ namespace HandCreateDSA {
         }
 
         std::cout << name << " passed all unit tests." << std::endl;
+        Logger::getInstance().log("Unit Tests passed for: " + name);
     }
 
     void SortTester::runCustomTest(const std::string& name, std::function<void(std::vector<int>&)> sortFunc, std::vector<int> input) {
+        Logger::getInstance().log("Custom Test started: " + name);
         std::vector<int> original = input;
+        
+        auto start = std::chrono::high_resolution_clock::now();
         sortFunc(input);
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> elapsed = end - start;
 
         if (!isSorted(input)) {
             std::cerr << "FAIL: " << name << " - Array is not sorted!" << std::endl;
@@ -146,9 +161,12 @@ namespace HandCreateDSA {
             bool match = (original == input);
             if (!match) {
                  std::cerr << "FAIL: " << name << " - Array is sorted but elements do not match original!" << std::endl;
+                 Logger::getInstance().log("FAIL: " + name + " - Element mismatch.");
                  exit(1);
             }
             std::cout << "PASS: " << name << " (Custom Input)" << std::endl;
+            Logger::getInstance().log("Custom Test passed: " + name);
+            Logger::getInstance().logSortResult(name + "_Custom", original, input, elapsed.count());
         }
     }
 

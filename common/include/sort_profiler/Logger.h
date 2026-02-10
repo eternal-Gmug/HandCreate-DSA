@@ -57,7 +57,7 @@ namespace HandCreateDSA {
         /// @param elapsedMs 算法执行耗时 (毫秒).
         void logSortResult(const std::string& algorithmName, const std::vector<int>& before, const std::vector<int>& after, double elapsedMs);
         
-         /// @brief 将整数向量转换为字符串表示.
+        /// @brief 将整数向量转换为字符串表示.
         /// @param vec 要转换的向量.
         /// @return 形如 "[1, 2, 3]" 的字符串.
         std::string vecToString(const std::vector<int>& vec);
