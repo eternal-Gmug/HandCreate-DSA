@@ -304,17 +304,22 @@ void SortAlgorithm::mergeSort(vector<int>& target){
 // （优化点1😊）三数取中选取基准数——针对数组近乎有序导致复杂度逼近O(N^2)的难点
 void getMediumNum(vector<int>& pending, int left, int right){
     int mid = (left + right) / 2;
-    int min_index = left;     // 记录最小基准数的索引，初始化为left
+    int min_index_lm = left;     // 记录left和mid之间最小基准数的索引，初始化为left
+    int max_index_lm = mid;      // 记录left和mid之间最大基准数的索引，初始化位mid
     // 比较left和mid的大小
-    if(pending[mid] < pending[min_index]){
-        min_index = mid;
+    if(pending[left] > pending[mid]){
+        min_index_lm = mid;
+        max_index_lm = left;
     }
-    // 比较right和min(left,mid)的大小
-    if(pending[right] < pending[min_index]){
+    // 比较right和min_index_lm的大小
+    if(pending[min_index_lm] > pending[right]){
+        swap(pending[min_index_lm], pending[right]);
         return;
     }
-    // 最小值与最后一个元素交换位置
-    swap(pending[min_index], pending[right]);
+    // 比较right和max_index_lm的大小
+    if(pending[max_index_lm] < pending[right]){
+        swap(pending[max_index_lm], pending[right]);
+    }
 }
 
 // 寻找基准元素所在的位置
