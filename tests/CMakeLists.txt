@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.10)
-project(Tests)
+add_subdirectory(unit_tests)
+add_subdirectory(integration_tests)
 
-enable_testing()
-# add_subdirectory(unit_tests)
