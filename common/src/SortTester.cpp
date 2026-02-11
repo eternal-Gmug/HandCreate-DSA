@@ -141,24 +141,24 @@ namespace HandCreateDSA {
         Logger::getInstance().log("Unit Tests passed for: " + name);
     }
 
-    void SortTester::runCustomTest(const std::string& name, std::function<void(std::vector<int>&)> sortFunc, std::vector<int> input) {
+    void SortTester::runCustomTest(const std::string& name, std::function<void(std::vector<int>&, int)> sortFunc, std::vector<int> input,int flag) {
         Logger::getInstance().log("Custom Test started: " + name);
-        std::vector<int> original = input;
-        
+        std::vector<int> originalForMatch = input;
+        std::vector<int> originalForLog = input;
         auto start = std::chrono::high_resolution_clock::now();
-        sortFunc(input);
+        sortFunc(input,flag);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end - start;
 
         if (!isSorted(input)) {
             std::cerr << "FAIL: " << name << " - Array is not sorted!" << std::endl;
-            std::cerr << "Original: " << Logger::getInstance().vecToString(original) << std::endl;
+            std::cerr << "Original: " << Logger::getInstance().vecToString(originalForMatch) << std::endl;
             std::cerr << "Result:   " << Logger::getInstance().vecToString(input) << std::endl;
             exit(1);
         } else {
              // 简单的长度和元素守恒检查（通过比较排序后的原始副本）
-            std::sort(original.begin(), original.end());
-            bool match = (original == input);
+            std::sort(originalForMatch.begin(), originalForMatch.end());
+            bool match = (originalForMatch == input);
             if (!match) {
                  std::cerr << "FAIL: " << name << " - Array is sorted but elements do not match original!" << std::endl;
                  Logger::getInstance().log("FAIL: " + name + " - Element mismatch.");
@@ -166,7 +166,7 @@ namespace HandCreateDSA {
             }
             std::cout << "PASS: " << name << " (Custom Input)" << std::endl;
             Logger::getInstance().log("Custom Test passed: " + name);
-            Logger::getInstance().logSortResult(name + "_Custom", original, input, elapsed.count());
+            Logger::getInstance().logSortResult(name + "_Custom", originalForLog, input, elapsed.count());
         }
     }
 

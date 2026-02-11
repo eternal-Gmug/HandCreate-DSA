@@ -10,7 +10,8 @@ namespace HandCreateDSA {
         /// 时间复杂度 O(n^2).
         ///
         /// @param target 待排序的向量 (原地修改).
-        static void bubbleSort(std::vector<int>& target);
+        /// @param flag 0：使用最原始的方法 1：使用优化方法
+        static void bubbleSort(std::vector<int>& target,int flag = 1);
 
         /// @brief 标准快速排序算法.
         ///
@@ -18,7 +19,7 @@ namespace HandCreateDSA {
         /// 分治策略：选择一个基准，将数组分为小于和大于基准的两部分，递归排序。
         ///
         /// @param target 待排序的向量.
-        static void quickSort(std::vector<int>& target);
+        static void quickSort(std::vector<int>& target,int flag = 1);
 
         /// @brief 三路快速排序算法 (3-Way Quick Sort).
         ///
@@ -26,7 +27,7 @@ namespace HandCreateDSA {
         /// 核心思想：将数组分为 < pivot, = pivot, > pivot 三部分，仅递归 < 和 > 的部分。
         ///
         /// @param target 待排序的向量.
-        static void quickSort3Way(std::vector<int>& target);
+        static void quickSort3Way(std::vector<int>& target,int flag = 1);
 
         /// @brief 双基准快速排序算法 (Dual-Pivot Quick Sort).
         ///
@@ -34,7 +35,7 @@ namespace HandCreateDSA {
         /// 通常比单基准版本有更少的交换次数和更高的效率。
         ///
         /// @param target 待排序的向量.
-        static void dualPivotQuickSort(std::vector<int>& target);
+        static void dualPivotQuickSort(std::vector<int>& target,int flag = 1);
 
         /// @brief 归并排序算法.
         ///
@@ -43,21 +44,21 @@ namespace HandCreateDSA {
         /// 时间复杂度始终为 O(n log n)，但需要额外的 O(n) 内存空间。
         ///
         /// @param target 待排序向量.
-        static void mergeSort(std::vector<int>& target);
+        static void mergeSort(std::vector<int>& target,int flag = 1);
 
         /// @brief 插入排序算法.
         ///
         /// 构建有序序列，对于未排序数据，在已排序序列中从后向前扫描，找到相应位置并插入。
         ///
         /// @param target 待排序向量.
-        static void insertionSort(std::vector<int>& target);
+        static void insertionSort(std::vector<int>& target,int flag = 1);
 
         /// @brief 优化后的插入排序 (Binary Insertion Sort).
         ///
         /// 使用二分查找来减少比较操作的次数，但数据移动次数仍然是 O(n^2).
         ///
         /// @param target 待排序向量.
-        static void insertionSortOptimized(std::vector<int>& target);
+        static void insertionSortOptimized(std::vector<int>& target,int flag = 1);
 
         /// @brief 选择排序算法.
         ///
@@ -66,7 +67,7 @@ namespace HandCreateDSA {
         /// 唯一的好处可能就是不占用额外的内存空间。
         ///
         /// @param target 待排序向量.
-        static void selectionSort(std::vector<int>& target);
+        static void selectionSort(std::vector<int>& target,int flag = 1);
 
         /// @brief 堆排序算法.
         ///
@@ -75,7 +76,7 @@ namespace HandCreateDSA {
         /// 时间复杂度 O(n log n)，不稳定排序。
         ///
         /// @param target 待排序向量.
-        static void heapSort(std::vector<int>& target);
+        static void heapSort(std::vector<int>& target,int flag = 1);
 
         /// @brief 计数排序算法.
         ///
@@ -85,7 +86,7 @@ namespace HandCreateDSA {
         /// 时间复杂度为 O(n+k)，其中 k 是整数的范围。
         ///
         /// @param target 待排序向量.
-        static void countingSort(std::vector<int>& target);
+        static void countingSort(std::vector<int>& target,int flag = 1);
 
         /// @brief 桶排序算法.
         ///
@@ -93,7 +94,7 @@ namespace HandCreateDSA {
         /// 适用于元素均匀分布在某个范围内的场景。
         ///
         /// @param target 待排序向量.
-        static void bucketSort(std::vector<int>& target);
+        static void bucketSort(std::vector<int>& target,int flag = 1);
 
         /// @brief 基数排序算法.
         ///
@@ -102,7 +103,7 @@ namespace HandCreateDSA {
         /// 最后的次序就是高优先级高的在前，高优先级相同的低优先级高的在前。
         ///
         /// @param target 待排序向量.
-        static void radixSort(std::vector<int>& target);
+        static void radixSort(std::vector<int>& target,int flag = 1);
 
         /// @brief 希尔排序算法.
         ///
@@ -111,6 +112,6 @@ namespace HandCreateDSA {
         /// 随着增量逐渐减少，每组包含的关键词越来越多，当增量减至1时，整个文件恰被分成一组，算法便终止。
         ///
         /// @param target 待排序向量.
-        static void shellSort(std::vector<int>& target);
+        static void shellSort(std::vector<int>& target,int flag = 1);
     };
 }

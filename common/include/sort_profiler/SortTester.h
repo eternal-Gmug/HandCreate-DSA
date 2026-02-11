@@ -58,7 +58,8 @@ namespace HandCreateDSA {
         /// @param name 测试名称.
         /// @param sortFunc 排序函数.
         /// @param input 用户提供的测试数组 (按值传递，保证不修改原数组).
-        static void runCustomTest(const std::string& name, std::function<void(std::vector<int>&)> sortFunc, std::vector<int> input);
+        /// @param flag 可选的标志参数，传递给排序函数以控制其行为。
+        static void runCustomTest(const std::string& name, std::function<void(std::vector<int>&,int)> sortFunc, std::vector<int> input,int flag = 1);
     };
 
 }

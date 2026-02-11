@@ -8,7 +8,9 @@ int main() {
 
     // 2. 运行自定义数组测试
     std::vector<int> myCustomArray = { 99, 10, 5, 100, 2, 8, 1 };
-    HandCreateDSA::SortTester::runCustomTest("My Custom Case", HandCreateDSA::Sort::bubbleSort, myCustomArray);
+    HandCreateDSA::SortTester::runCustomTest("My Custom Case", [](std::vector<int>& arr,int flag) {
+        HandCreateDSA::Sort::bubbleSort(arr, flag);
+    }, myCustomArray, 1);
 
     return 0;
 }

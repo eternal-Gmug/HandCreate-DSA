@@ -6,22 +6,50 @@
 namespace HandCreateDSA {
 
     // ================= Bubble Sort =================
-    void Sort::bubbleSort(std::vector<int>& target){
+    void Sort::bubbleSort(std::vector<int>& target, int flag){
         Logger::getInstance().log("BubbleSort started.");
-        
-        // [外层循环]
-        // 控制遍历的轮数。每完成一轮，最大的元素就会"冒泡"到最后。
-        int n = target.size();
-        for(int j=n-1; j>0; j--){
-            // [内层循环]
-            // 相邻元素两两比较，如果顺序错误则交换。
-            // j 是当前未排序部分的边界。
-            for(int i=0; i<j; i++){
-                if(target[i] > target[i+1]){
-                    std::swap(target[i], target[i+1]);
+        // [算法说明]
+        // flag == 1 优化算法：
+        //  如果某一轮没有发生交换，说明数组已经有序，可以提前结束。
+        //  增加边界减少对比次数
+        switch (flag){
+            case 1:{
+                int bubbleBorder = target.size() - 1; // 每轮冒泡的边界，初始为数组末尾
+                while(bubbleBorder>0){
+                    bool isSwapped = false; // 标记本轮是否发生交换
+                    int lastSwapPos = 0; //最后一次交换位置
+                    for (int i = 0;i<bubbleBorder;i++){
+                        if (target[i]>target[i+1]){
+                            std::swap(target[i],target[i+1]);
+                            isSwapped = true; // 发生交换
+                            lastSwapPos = i; 
+                        }
+                    }
+                    bubbleBorder = lastSwapPos; //更新边界
+                    if (!isSwapped){
+                        break; //没有交换，提前退出
+                    }
                 }
+                break;
             }
-        }
+            default:{
+                //原始算法
+                // [外层循环]
+                // 控制遍历的轮数。每完成一轮，最大的元素就会"冒泡"到最后。
+                int n = target.size();
+                for(int j=n-1; j>0; j--){
+                    // [内层循环]
+                    // 相邻元素两两比较，如果顺序错误则交换。
+                    // j 是当前未排序部分的边界。
+                    for(int i=0; i<j; i++){
+                        if(target[i] > target[i+1]){
+                            std::swap(target[i], target[i+1]);
+                        }
+                    }
+                }
+                break;
+            }
+        };
         Logger::getInstance().log("BubbleSort finished.");
     }
 
@@ -75,7 +103,7 @@ namespace HandCreateDSA {
         innerQuick(target, pivotPos + 1, right);
     }
 
-    void Sort::quickSort(std::vector<int>& target){
+    void Sort::quickSort(std::vector<int>& target,int flag){
         Logger::getInstance().log("QuickSort started.");
         if(target.empty()) return;
         innerQuick(target, 0, target.size() - 1);
@@ -107,7 +135,7 @@ namespace HandCreateDSA {
         innerQuick3Way(target, gt + 1, right);
     }
 
-    void Sort::quickSort3Way(std::vector<int>& target){
+    void Sort::quickSort3Way(std::vector<int>& target,int flag){
         if(target.empty()) return;
         innerQuick3Way(target, 0, target.size() - 1);
     }
@@ -162,7 +190,7 @@ namespace HandCreateDSA {
         dualPivot(target, gt + 1, right);
     }
 
-    void Sort::dualPivotQuickSort(std::vector<int>& target){
+    void Sort::dualPivotQuickSort(std::vector<int>& target,int flag){
         if(target.empty()) return;
         dualPivot(target, 0, target.size() - 1);
     }
@@ -212,13 +240,13 @@ namespace HandCreateDSA {
         merge(target, left, right, mid);
     }
 
-    void Sort::mergeSort(std::vector<int>& target){
+    void Sort::mergeSort(std::vector<int>& target,int flag){
         if (target.empty()) return;
         divide(target, 0, target.size() - 1);
     }
 
     // ================= Insertion Sort =================
-    void Sort::insertionSort(std::vector<int>& target){
+    void Sort::insertionSort(std::vector<int>& target,int flag){
         int n = target.size();
         for(int i=1; i<n; i++){
             // [记录当前值]
@@ -238,7 +266,7 @@ namespace HandCreateDSA {
         }
     }
 
-    void Sort::insertionSortOptimized(std::vector<int>& target){
+    void Sort::insertionSortOptimized(std::vector<int>& target,int flag){
         int n = target.size();
         for(int i=1; i<n; i++){
             int insertNum = target[i];
@@ -267,7 +295,7 @@ namespace HandCreateDSA {
     }
 
     // ================= Selection Sort =================
-    void Sort::selectionSort(std::vector<int>& target){
+    void Sort::selectionSort(std::vector<int>& target,int flag){
         int n = target.size();
         for(int i=0; i<n-1; i++){
             // [寻找最小值]
@@ -313,7 +341,7 @@ namespace HandCreateDSA {
         }
     }
 
-    void Sort::heapSort(std::vector<int>& target){
+    void Sort::heapSort(std::vector<int>& target,int flag){
         int n = target.size();
 
         // [构建大顶堆]
@@ -333,7 +361,7 @@ namespace HandCreateDSA {
     }
 
     // ================= Counting Sort =================
-    void Sort::countingSort(std::vector<int>& target){
+    void Sort::countingSort(std::vector<int>& target,int flag){
         // [算法说明]
         // 计数排序的核心是将输入的数据值转化为键存储在额外开辟的数组空间中。
         // 1. 找出待排序的数组中最大和最小的元素
@@ -346,7 +374,7 @@ namespace HandCreateDSA {
     }
 
     // ================= Bucket Sort =================
-    void Sort::bucketSort(std::vector<int>& target){
+    void Sort::bucketSort(std::vector<int>& target,int flag){
         // [算法说明]
         // 桶排序假设通过某种映射函数，将输入数据均匀分配到有限数量的桶中。
         // 然后对每个桶中的数据进行排序（可以使用其他排序算法或递归使用桶排序进行排序）。
@@ -357,7 +385,7 @@ namespace HandCreateDSA {
     }
 
     // ================= Radix Sort =================
-    void Sort::radixSort(std::vector<int>& target){
+    void Sort::radixSort(std::vector<int>& target,int flag){
         // [算法说明]
         // 基数排序是非比较型整数排序算法。
         // 原理是将整数按位数切割成不同的数字，然后按每个位数分别比较。
@@ -371,7 +399,7 @@ namespace HandCreateDSA {
     }
 
     // ================= Shell Sort =================
-    void Sort::shellSort(std::vector<int>& target){
+    void Sort::shellSort(std::vector<int>& target,int flag){
         // Logger::getInstance().log("ShellSort started.");
         int n = target.size();
         
