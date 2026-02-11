@@ -475,36 +475,287 @@ void SortAlgorithm::dualPivotQuickSort(vector<int>& target){
     dualPivot(target, 0, target.size() - 1);
 }
 
+/*
+堆排序算法（Heap Sort）
+堆排序通过对数组构建大根堆，每次将堆顶元素与末尾元素交换并逐步缩小处理数组的大小以达到有序的状态
+时间复杂度分析：
+（1）对每个元素构建大根堆时操作的复杂度是logN
+（2）需要对每个非叶子节点调整位置，复杂度是N
+（3）总共的复杂度是O(NlogN)
+空间复杂度分析：
+堆的本质还是在数组上操作，原地排序，复杂度是O(1)
+稳定性：
+不稳定，存在大量树状父子节点的交换会改变相同元素的相对位置
+适用场景：
+适合内存排序，适合处理大规模数据排序的场景，但在小规模场景下性能可能不如插入排序
+*/
+void heapBuild(vector<int>& pending, int n, int i){
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+    // 父节点与左结点比较
+    if(left < n && pending[left] > pending[largest]){
+        largest = left;
+    }
+    // 右节点与min(左节点，父节点)比较
+    if(right < n && pending[right] > pending[largest]){
+        largest = right;
+    }
+    // 如果最大值发生了改变
+    if(largest != i){
+        swap(pending[i], pending[largest]);
+        // 因为上层构建时会打乱下层已构建好的大根堆，所以需要进行延续处理
+        heapBuild(pending, n, largest);
+    }
+}
+
 void SortAlgorithm::heapSort(){
-    // TODO: 实现堆排序
+    int n = pending.size();
+    // 从最后一个非叶子节点构建大根堆
+    for(int i=(n / 2 - 1); i>=0; i--){
+        heapBuild(pending, n, i);
+    }
+    // 构建完之后将末尾元素与堆顶元素交换
+    for(int i=n-1; i>0; i--){
+        swap(pending[i], pending[0]);
+        // 交换完以后将堆的大小减去1并且对根顶元素重新构建
+        heapBuild(pending, i, 0);
+    }
 }
 
 void SortAlgorithm::heapSort(vector<int>& target){
-    // TODO: 实现堆排序
+    int n = target.size();
+    // 从最后一个非叶子节点构建大根堆
+    for(int i=(n/2-1); i>=0; i--){
+        heapBuild(target, n, i);
+    }
+    // 交换数组末尾元素与堆顶元素
+    for(int i=n-1; i>0; i--){
+        swap(pending[i], pending[0]);
+        // 针对堆顶元素重新构建大根堆，但堆的大小需要减去1
+        heapBuild(target, i, 0);
+    }
 }
 
+/*
+计数排序算法（CountingSort）
+计数排序不是比较型算法，原理非常简单，对每个元素记录它出现的次数，要求必须有明确的数字范围❗
+时间复杂度分析：
+（1）统计频率，需要遍历一遍数组，复杂度为N
+（2）遍历累加数组并复写到原数组上，复杂度为K和N
+（3）总的复杂度是O(N+K)，N是数组的大小，K是数字范围的大小
+空间复杂度分析：
+（1）需要额外开一个大小为K的数组，复杂度为O(K) ——— 直接复写回原数组的情况下
+稳定性分析：
+因为是顺序遍历，相同元素会按照一样的相对位置落入计数数组中
+注意：这种排序仅适用于整数且有限范围内的数据
+适用场景：
+（1）排序范围较小的整数数组
+（2）适合外部排序（磁盘文件）
+*/
 void SortAlgorithm::countingSort(){
-    // TODO: 实现计数排序
+    auto min_index = min_element(pending.begin(), pending.end());
+    auto max_index = max_element(pending.begin(), pending.end());
+    int min_num = *min_index;
+    int max_num = *max_index;
+    int capacity = max_num - min_num + 1;
+    vector<int> record(capacity, 0);
+    int n = pending.size();
+    // 计算元素出现次数
+    for(int i=0; i<n; i++){
+        record[pending[i] - min_num]++;
+    }
+    // 根据record记录的值复写回pending中
+    int i = 0;      // pending的复写指针
+    for(int j=0; j<capacity; j++){
+        while(record[j] > 0){
+            pending[i++] = j + min_num;
+            record[j]--;
+        }
+    }
 }
 
 void SortAlgorithm::countingSort(vector<int>& target){
-    // TODO: 实现计数排序
+    auto min_index = min_element(target.begin(), target.end());
+    auto max_index = max_element(target.begin(), target.end());
+    int min_num = *min_index;
+    int max_num = *max_index;
+    int capacity = max_num - min_num + 1;
+    vector<int> record(capacity, 0);
+    int n = target.size();
+    for(int i=0; i<n; i++){
+        record[target[i] - min_num]++;
+    }
+    int i = 0;
+    for(int j=0; j<capacity; j++){
+        while(record[j] > 0){
+            target[i++] = j + min_num;
+            record[j]--;
+        }
+    }
 }
 
-void SortAlgorithm::bucketSort(){
-    // TODO: 实现桶排序
+/*
+桶排序算法（BucketSort）
+桶排序是一种分布式排序算法，它利用函数的映射关系将输入数据分配到不同的桶中，在这个桶里面进行排序，最后再进行合并
+当数据分布均匀时，排序的性能优异，如果不均匀的话，容易造成大量空桶的存在
+时间复杂度分析：
+（1）将每个元素塞进对应的桶里，复杂度是N
+（2）假设每个桶里的元素个数是m，并且使用快速排序进行排序，那么K个桶的时间复杂度是O(K*mlogm)
+（3）再将每个桶里的元素顺序合并，复杂度是N
+（4）总的时间复杂度为O(N + K*mlogm)
+空间复杂度分析：
+需要额外K个vector来记录每个vector待排序的元素，复杂度是O(N+K)
+适用场景：
+桶排序是典型的分布式排序算法，广泛应用于外部排序，例如加载一个超大乱序文件时，可以将它拆分到有限的顺序文件中进行排序整理，最后再合并成一个完整的文件
+*/
+void SortAlgorithm::bucketSort(int bucketSize){
+    int n = pending.size();
+    if(n <= 1) return;
+    int minVal = *min_element(pending.begin(), pending.end());
+    int maxVal = *max_element(pending.begin(), pending.end());
+    // 计算桶的数量
+    int bucketCount = (maxVal - minVal) / bucketSize + 1;
+    vector<vector<int>> buckets(bucketCount);
+    // 将元素分配到对应的桶中
+    for(int i=0; i<n; i++){
+        int index = (pending[i] - minVal) / bucketSize;
+        buckets[index].push_back(pending[i]);
+    }
+    // 对每个桶内部进行排序，然后合并回原数组
+    int pos = 0;
+    for(int i=0; i<bucketCount; i++){
+        // 桶内使用快速排序
+        quickSort(buckets[i]);
+        // 将桶内元素复写回原数组
+        for(int j=0; j<(int)buckets[i].size(); j++){
+            pending[pos++] = buckets[i][j];
+        }
+    }
 }
 
-void SortAlgorithm::bucketSort(vector<int>& target){
-    // TODO: 实现桶排序
+void SortAlgorithm::bucketSort(vector<int>& target, int bucketSize){
+    int n = target.size();
+    if(n <= 1) return;
+    int minVal = *min_element(target.begin(), target.end());
+    int maxVal = *max_element(target.begin(), target.end());
+    int bucketCount = (maxVal - minVal) / bucketSize + 1;
+    vector<vector<int>> buckets(bucketCount);
+    for(int i=0; i<n; i++){
+        int index = (target[i] - minVal) / bucketSize;
+        buckets[index].push_back(target[i]);
+    }
+    int pos = 0;
+    for(int i=0; i<bucketCount; i++){
+        quickSort(buckets[i]);
+        for(int j=0; j<(int)buckets[i].size(); j++){
+            target[pos++] = buckets[i][j];
+        }
+    }
 }
 
+/*
+基数排序算法（RadixSort）
+基数排序是一种非比较型排序算法，它通过从最低位到最高位按位排序来达到有序的状态
+基数排序是一种对非负整数处理的排序算法，如果数组中存在负数，可以通过负数偏移或正负数组分开排序的方式处理
+时间复杂度分析：
+（1）元素个数：把每个元素按处理位放入桶中，复杂度为N
+（2）轮次：按最大数的位数K来执行比较的次数，复杂度为K
+（3）总的时间复杂度是O(N*K)
+空间复杂度分析：
+（1）需要额外的空间存储桶和桶内的元素，复杂度是O(N+K)
+稳定性分析：
+与桶排序类似，相同元素会按照原先的相对位置放入桶中，不会改变它们之间的相对位置
+适用范围：
+数字范围较小且最大数位数K不大的整数数据排序
+外部排序（磁盘文件）
+*/
 void SortAlgorithm::radixSort(){
-    // TODO: 实现基数排序
+    int n = pending.size();
+    if(n <= 1) return;
+    int minVal = *min_element(pending.begin(), pending.end());
+    int maxVal = *max_element(pending.begin(), pending.end());
+    vector<vector<int>> bitBucket(10);
+    // 为消除负数对排序的影响，如果最小值小于0，对每个元素做一个偏移处理
+    if(minVal < 0){
+        for(int i=0; i<n; i++){
+            pending[i] -= minVal;
+        }
+        maxVal -= minVal;
+    }
+    // 确定需要遍历的轮次，即最大值的位数
+    int step = 1;
+    while(maxVal/(pow(10,step)) > 0){
+        step++;
+    }
+    // 按轮次进行排序
+    int cur = 1;     // 当前轮次
+    while(cur <= step){
+        for(int i=0; i<n; i++){
+            int reminder = pending[i] % (int)pow(10,cur);
+            int bitNum = reminder / (int)pow(10,cur - 1);
+            bitBucket[bitNum].push_back(pending[i]);
+        }
+        // 将bitBucket内的数复写回pending数组中
+        int pos = 0;
+        for(int i=0; i<10; i++){
+            for(int j=0; j < bitBucket[i].size(); j++){
+                pending[pos++] = bitBucket[i][j];
+            }
+            bitBucket[i].clear();   // 逐个清空每个桶，而不是清空整个二维vector
+        }
+        cur++;
+    }
+    // 最后需要对负数偏移做恢复处理
+    if(minVal < 0){
+        for(int i=0; i<n; i++){
+            pending[i] += minVal;
+        }
+    }
 }
 
 void SortAlgorithm::radixSort(vector<int>& target){
-    // TODO: 实现基数排序
+    int n = target.size();
+    if(n <= 1) return;
+    int minVal = *min_element(target.begin(), target.end());
+    int maxVal = *max_element(target.begin(), target.end());
+    vector<vector<int>> bitBucket(10);
+    // 为消除负数对排序的影响，如果最小值小于0，对每个元素做一个偏移处理
+    if(minVal < 0){
+        for(int i=0; i<n; i++){
+            target[i] -= minVal;
+        }
+        maxVal -= minVal;
+    }
+    // 确定需要遍历的轮次，即最大值的位数
+    int step = 1;
+    while(maxVal/(pow(10,step)) > 0){
+        step++;
+    }
+    // 按轮次进行排序
+    int cur = 1;     // 当前轮次
+    while(cur <= step){
+        for(int i=0; i<n; i++){
+            int reminder = target[i] % (int)pow(10,cur);
+            int bitNum = reminder / (int)pow(10,cur - 1);
+            bitBucket[bitNum].push_back(target[i]);
+        }
+        // 将bitBucket内的数复写回target数组中
+        int pos = 0;
+        for(int i=0; i<10; i++){
+            for(int j=0; j < bitBucket[i].size(); j++){
+                target[pos++] = bitBucket[i][j];
+            }
+            bitBucket[i].clear();   // 逐个清空每个桶，而不是清空整个二维vector
+        }
+        cur++;
+    }
+    // 最后需要对负数偏移做恢复处理
+    if(minVal < 0){
+        for(int i=0; i<n; i++){
+            target[i] += minVal;
+        }
+    }
 }
 
 void SortAlgorithm::traverse(){

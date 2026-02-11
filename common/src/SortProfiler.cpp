@@ -82,6 +82,9 @@ void SortProfiler::profile(const string& algorithmName, function<void()> sortFun
 
     // 写入日志
     writeLog(algorithmName, before, target, elapsed);
+
+    // 恢复为排序前的原始数组，确保后续排序算法面对的是同一份乱序数据
+    target = before;
 }
 
 // ========== 便捷方法：使用构造时绑定的 pending ==========
@@ -186,13 +189,13 @@ void SortProfiler::countingSort(vector<int>& target) {
     profile("计数排序 (Counting Sort)", [&]() { sorter.countingSort(target); }, target);
 }
 
-void SortProfiler::bucketSort() {
+void SortProfiler::bucketSort(int bucketSize) {
     vector<int>& pending = sorter.getPending();
-    profile("桶排序 (Bucket Sort)", [&]() { sorter.bucketSort(); }, pending);
+    profile("桶排序 (Bucket Sort)", [&]() { sorter.bucketSort(bucketSize); }, pending);
 }
 
-void SortProfiler::bucketSort(vector<int>& target) {
-    profile("桶排序 (Bucket Sort)", [&]() { sorter.bucketSort(target); }, target);
+void SortProfiler::bucketSort(vector<int>& target, int bucketSize) {
+    profile("桶排序 (Bucket Sort)", [&]() { sorter.bucketSort(target, bucketSize); }, target);
 }
 
 void SortProfiler::radixSort() {

@@ -59,8 +59,8 @@ class SortProfiler {
         void heapSort(vector<int>& target);
         void countingSort();
         void countingSort(vector<int>& target);
-        void bucketSort();
-        void bucketSort(vector<int>& target);
+        void bucketSort(int bucketSize=10);
+        void bucketSort(vector<int>& target, int bucketSize=10);
         void radixSort();
         void radixSort(vector<int>& target);
 
